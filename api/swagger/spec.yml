@@ -1,0 +1,97 @@
+swagger: "2.0"
+info:
+  title: Delilah Resto API
+  description: REST API Operaciones CRUD, permite realizar altas, bajas y modificaciones para un sistema de pedidos online.
+  version: 1.0.0
+# host: api.example.com
+# basePath: /v1
+schemes:
+  - https
+paths:
+  /user/all:
+    get:
+      summary: Devuelve la lista de todos los usuarios.
+      description: Trae la lista completa de usuarios de la base de datos.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+  /user/signup:
+    post:
+      summary: Registro de usuario.
+      description: Permite a un usuario registrarse a la aplicación con sus datos
+      responses:
+        200:
+          description: OK
+  /user/login:
+    post:
+      summary: Login de usuario.
+      description: Permite a un usuario loguearse a la aplicación con su usuario y email.
+      responses:
+        200:
+          description: OK
+  /products:
+    get:
+      summary: Devuelve la lista de productos.
+      description: Devuelve la lista completa de productos de la base de datos.
+      responses:
+        200:
+          description: OK
+    post:
+      summary: Agrega un producto a la lista.
+      description: Agrega un producto a la base de datos de la aplicación.
+      responses:
+        200:
+          description: OK
+  /products/:productId:
+    get:
+      summary: Devuelve un producto por id.
+      description: Devuelve un producto de la lista por su id "productId".
+      responses:
+        200:
+          description: OK
+    patch:
+      summary: Actualiza un producto por id.
+      description: Actualiza un producto de la lista por su id "productId"
+      responses:
+        200:
+          description: OK
+    delete:
+      summary: Elimina un producto de la lista.
+      description: Elimina un producto de la lista por id "productId"
+      responses:
+        200:
+          description: OK
+  /orders:
+    get:
+      summary: Devuelve la lista de productos.
+      description: Devuelve la lista completa de productos de la base de datos.
+      responses:
+        200:
+          description: OK
+    post:
+      summary: Agrega un producto a la lista.
+      description: Agrega un producto a la base de datos de la aplicación.
+      responses:
+        200:
+          description: OK
+  /orders/:orderId:
+    get:
+      summary: Devuelve un pedido por id.
+      description: Devuelve un pedido de la lista por su id "orderId".
+      responses:
+        200:
+          description: OK
+    patch:
+      summary: Actualiza un pedido por id.
+      description: Actualiza un pedido de la lista por su id "orderId"
+      responses:
+        200:
+          description: OK
+    delete:
+      summary: Elimina un order de la lista.
+      description: Elimina un order de la lista por id "orderId"
+      responses:
+        200:
+          description: OK

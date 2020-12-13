@@ -4,14 +4,11 @@ const bcrypt = require('bcrypt');
 
 const plainPass = '12345Acamica';
 /*
-var encrypted = 0;
 
 bcrypt.hash(plainPass, 10, (err, hash) => {
     console.log(hash);
-    encrypted = hash;
 })
 
-console.log(encrypted);
 */
 const hashPassword = async (password, saltRounds = 10) => {
     try {
@@ -42,7 +39,7 @@ async function validatePass(pass1, pass2) {
     }
 }
 
-validatePass('acamic', 'acamica');
+validatePass('acamica', 'acamica');
 
 /*
 hashPassword(plainPass).then((hash) => {

@@ -1,3 +1,4 @@
+//Libraries
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -24,7 +25,7 @@ dotenv.config();
 console.log(process.env.SECRET_MESSAGE);
 
 // Routes which should handle requests
-app.use('/user', userRoutes);
+app.use('/user', userRoutes.router);
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
 

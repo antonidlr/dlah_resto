@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const user = require('./../routes/user');
 
 /* /Users/antoniodelosrios/Desktop/Fullstack/2.CLASES/BLOQUE_3/clases/delilah_resto/connection */
 const sequelize = require('../database/connection');
 
-router.get('/', async (req, res) => {
+router.get('/', user.is_authenticated, async (req, res) => {
     let statement = "SELECT * FROM products";
     let options = {type: sequelize.QueryTypes.SELECT};
     let productsData = await sequelize.query(statement, options);
@@ -28,7 +29,7 @@ router.post('/', (req, res, next) => {
 });
 */
 
-router.post('/', async (req, res) => {
+router.post('/', user.is_authenticated, async (req, res) => {
     const product = {
         name: req.body.name,
         price: req.body.price
@@ -44,7 +45,7 @@ router.post('/', async (req, res) => {
     });
 });
 
-router.get('/:productId', async (req, res) => {
+router.get('/:productId', user.is_authenticated, async (req, res) => {
     const id = req.params.productId;
 
     let statement = `SELECT * FROM products WHERE id = ${id}`;
@@ -53,7 +54,7 @@ router.get('/:productId', async (req, res) => {
     
     res.status(200).json({
         message: `Your product by ID ${id}`,
-        id: productsId
+        product: productsId
     })
     /*
     if(id === 'special') {

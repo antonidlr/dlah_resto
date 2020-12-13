@@ -6,17 +6,15 @@ const dotenv = require('dotenv');
 //const middleware = require('./../utilities/middleware');
 
 dotenv.config();
-//const { SELECT } = require('sequelize/types/lib/query-types');
 
 const sequelize = require('../database/connection');
 const app = require('../../app');
 
-
-// header payload signature
+// signature from env.
 
 const signature = process.env.JWT_KEY;
 
-
+//User with Admin role
 function is_authenticated (req, res, next) {
     try {
         let token = req.headers.authorization.split(" ")[1];
@@ -35,6 +33,26 @@ function is_authenticated (req, res, next) {
     }
 };
 
+//Valid User in Database
+function is_validUser (req, res, next) {
+    try {
+        let token = req.headers.authorization.split(" ")[1];
+        let decoded = jwt.verify(token, signature);
+        console.log("Token codificado: ",decoded);
+        
+        if(decoded) {
+            req.user = decoded;
+            next();
+        } else {
+            res.status(400).json("User is not authenticated")
+        }
+
+    } catch (error) {
+        res.status(400).json("Error authenticating user.",error);
+    }
+}
+
+//Validation email and password in Database
 async function validateUser (req, res, next) {
     
     const email = req.body.email;
@@ -61,6 +79,7 @@ async function validateUser (req, res, next) {
     }
 }
 
+//Encrypt password for created user
 const hashPassword = async (password, saltRounds = 10) => {
     try {
         // Generate a salt
@@ -77,8 +96,8 @@ const hashPassword = async (password, saltRounds = 10) => {
     return null;
 };
 
-//Sign Up a USER with all data
 
+//Sign Up a USER with all data
 router.post('/signup', async (req, res) => {
 
     try {
@@ -121,8 +140,8 @@ router.post('/signup', async (req, res) => {
     
 });
 
-// Login User to app
 
+// Login User to app
 router.post('/login', validateUser, (req, res) => {
 
     const usuario = req.userdata;
@@ -179,5 +198,6 @@ router.get('/verpaquetes', is_authenticated, (req, res) => {
 module.exports = {
     router, 
     validateUser,
-    is_authenticated
+    is_authenticated,
+    is_validUser
 };

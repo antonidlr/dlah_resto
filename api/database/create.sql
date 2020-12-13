@@ -67,7 +67,7 @@ CREATE TABLE orders (
     status tinyint NOT NULL,
     total_price DECIMAL (10, 2) NOT NULL,
     payment tinyint NOT NULL,
-    order_date DATE NOT NULL,
+    order_date DATETIME NOT NULL,
     PRIMARY KEY (order_id),
     FOREIGN KEY (user_id)
     REFERENCES users (id)

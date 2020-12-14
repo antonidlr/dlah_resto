@@ -74,7 +74,7 @@ CREATE TABLE orders (
     ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- status: 1 = new; 2 = confirmed; 3 = preparing; 4 = out_of_delivery 5 = ccanceled 6 = delivered
+-- status: 1 = new; 2 = confirmed; 3 = preparing; 4 = out_of_delivery 5 = canceled 6 = delivered
 --payment: 1 = Cash 2 = Credit Card
 
 -- TABLE Order Items

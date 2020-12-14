@@ -14,10 +14,30 @@ const sequelize = require('../database/connection');
 
 //Handle inconming GET requests to /orders
 
-router.get('/', (req, res, next) => {
-    res.status(200).json({
-        message: 'Orders were fetched'
-    });
+router.get('/', user.is_authenticated, async (req, res, next) => {
+
+    try{
+        const statement = "SELECT * FROM orders";
+        const options = {type: sequelize.QueryTypes.SELECT};
+        const ordersData = await sequelize.query(statement, options);
+
+        const statement1 = "SELECT * FROM order_items";
+        const options1 = {type: sequelize.QueryTypes.SELECT};
+        const ordersData1 = await sequelize.query(statement1, options1);
+        
+        res.status(200).json({
+            message: 'GET requests to /orders fetched',
+            responseOrders: ordersData,
+            productsbyOrderId: ordersData1
+        });
+
+    } catch(error) {
+        console.log(error);
+        res.status(404).json({
+            message: 'Not found',
+            error: error
+        });
+    }
 });
 
 // Create new order
@@ -73,12 +93,18 @@ router.post('/', user.is_validUser, async (req, res, next) => {
                 ((SELECT order_id FROM orders ORDER BY order_id DESC LIMIT 1),(SELECT id FROM products WHERE id = '${element.product_id}'),'${element.quantity}')`;
                 const orderData2 = await sequelize.query(statement2);
             })
+
+            res.status(201).json({
+                message: 'Order was created',
+                response: orderData1[0]
+                
+            });
+        } else {
+            res.status(404).json({
+                message: 'Not Found - Empty Order List',
+            });
         }
-        
-        res.status(201).json({
-            message: 'Order was created',
-            
-        });
+
     } catch(error) {
         console.log(error);
         res.status(400).json({
@@ -101,7 +127,7 @@ router.put('/:orderId', user.is_authenticated, async (req, res, next) => {
         const options = {type: sequelize.QueryTypes.SELECT};
         const orderData = await sequelize.query(statement, options);
         
-        if(orderData) {
+        if(orderData.length == 1) {
             console.log(orderData);
             if(newStatus >= 2 && newStatus <= 6) {
                 const statement1 = `UPDATE orders SET status=${newStatus} WHERE order_id=?`;
@@ -133,11 +159,46 @@ router.put('/:orderId', user.is_authenticated, async (req, res, next) => {
 
 });
 
-router.delete('/:orderId', (req, res, next) => {
-    res.status(200).json({
-        message: 'Order deleted',
-        orderId: req.params.orderId
-    });
+
+router.delete('/:orderId', user.is_authenticated, async (req, res, next) => {
+
+    try{
+        const id = req.params.orderId;
+        
+        const statement = `SELECT * FROM orders WHERE order_id = ${id}`;
+        const options = {type: sequelize.QueryTypes.SELECT};
+        const orderData = await sequelize.query(statement, options);
+        
+        if(orderData.length == 1) {
+            console.log(orderData);
+            
+            const statement1 = `DELETE FROM orders WHERE order_id=?`;
+            const options1 = {replacements: [id]};
+            const orderData1 = await sequelize.query(statement1, options1);
+            
+            const statement2 = `DELETE FROM order_items WHERE id=?`;
+            const options2 = {replacements: [id]};
+            const orderData2 = await sequelize.query(statement2, options2);
+            
+            res.status(200).json({
+                message: 'Order deleted',
+                orderId: req.params.orderId
+            });
+            
+        } else {
+            res.status(404).json({
+                message: 'Not found - Order ID not found'
+            });
+        }
+        
+    } catch(error) {
+        console.log(error);
+        res.status(404).json({
+            message: 'Not found',
+            error: error
+        });
+    }
+
 });
 
 

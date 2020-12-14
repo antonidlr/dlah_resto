@@ -1,6 +1,19 @@
 
 const bcrypt = require('bcrypt');
+const dotenv = require('dotenv');
 
+dotenv.config();
+
+console.log(process.env.DRIVER_NAME);
+
+/*
+const driver_name = "mysql";
+const db_user = "antonidlr";
+const db_password = "";
+const db_host = "192.168.64.2";
+const db_port = 3306;
+const db_name = "dbdelilah";
+*/
 
 const plainPass = '12345Acamica';
 /*

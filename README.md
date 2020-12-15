@@ -56,3 +56,6 @@ info:
   description: REST API Operaciones CRUD, permite realizar altas, bajas y modificaciones para un sistema de pedidos online.
   version: 1.0.0
 ```
+
+## License
+[Dlah_resto](https://github.com/antonidlr/dlah_resto)

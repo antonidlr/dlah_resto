@@ -12,7 +12,7 @@ REST API Operaciones CRUD, permite realizar altas, bajas y modificaciones para u
 ```bash
 npm install
 ```
-3. En el archivo .env ubicar las variables personales puerto, signature JWT Tokens y conexión a base de datos mysql phpMyAdmin XAMPP.
+3. En el archivo .env ubicar las variables personales puerto, signature JWT Tokens y conexión a base de datos mysql phpMyAdmin XAMPP. Example:
 
 ```bash
 

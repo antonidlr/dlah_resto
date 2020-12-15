@@ -57,5 +57,5 @@ info:
   version: 1.0.0
 ```
 
-## License
+## Github
 [Dlah_resto](https://github.com/antonidlr/dlah_resto)

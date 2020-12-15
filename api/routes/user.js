@@ -108,7 +108,7 @@ router.post('/signup', async (req, res) => {
     
         if(validUser[0]) {
             return res.status(409).json({
-                message: 'Conflict - Mail exists'
+                message: 'Conflict - email exists'
             });
         } else {
             const password = await hashPassword(req.body.password);
@@ -119,14 +119,22 @@ router.post('/signup', async (req, res) => {
                 req.body.phone,
                 req.body.address,
                 password,
-                req.body.role
+                0
             ]
             const statement2 = "INSERT INTO users (username, fullname, email, phone, address, password, role) VALUES (?)";
             const options2 = {replacements: [values]};
             const newUser = await sequelize.query(statement2, options2);
-    
+            /*
+            const tokenData = {
+                id: usuario.id,
+                email: usuario.email,
+                role: usuario.role
+            }
+
+            const token = jwt.sign(userfinal, signature);
+            */
             res.status(201).json({
-                message: 'Created - Handling POST requests to /signup - new user created',
+                message: 'Created - Handling POST requests to /signup - new user created'
             });
         }
     } catch(error) {

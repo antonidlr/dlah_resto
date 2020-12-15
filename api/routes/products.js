@@ -60,10 +60,17 @@ router.get('/:productId', user.is_authenticated, async (req, res) => {
         let options = {type: sequelize.QueryTypes.SELECT};
         let productsId = await sequelize.query(statement, options);
         
-        res.status(200).json({
-            message: `Your product by ID ${id}`,
-            product: productsId
-        })
+        if(productsId.length >=1) {
+            res.status(200).json({
+                message: `Your product by ID ${id}`,
+                product: productsId
+            })
+        }else {
+            res.status(404).json({
+                message: `Product by ID ${id} Not found`
+            });
+        }
+        
     } catch(error) {
         console.log(error);
         res.status(404).json({

@@ -3,7 +3,7 @@ info:
   title: Delilah Resto API
   description: REST API Operaciones CRUD, permite realizar altas, bajas y modificaciones para un sistema de pedidos online.
   version: 1.0.0
-# host: api.example.com
+# host: localhost:3000
 # basePath: /v1
 schemes:
   - https
@@ -11,87 +11,478 @@ paths:
   /user/all:
     get:
       summary: Devuelve la lista de todos los usuarios.
-      description: Trae la lista completa de usuarios de la base de datos.
+      description: Trae la lista completa de usuarios de la base de datos, solo para usuario con (role = 1) de Administrador, usuarios con (role = 0) no funciona.
       produces:
         - application/json
       responses:
         200:
           description: OK
+          schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: 'Handling GET requests to /user/all'
+                response:
+                  items:
+                    $ref: '#/definitions/Userdata'
+        404:
+          description: Not Found
+          schema:
+              $ref: '#/definitions/Not_found'
   /user/signup:
     post:
       summary: Registro de usuario.
       description: Permite a un usuario registrarse a la aplicación con sus datos
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: newuser
+          description: The new user to create.
+          schema:
+              $ref: '#/definitions/Newuser'
       responses:
-        200:
-          description: OK
+        201:
+          description: 'Created - Handling POST resquest to /signup - new user created'
+          schema:
+              $ref: '#/definitions/OK'
+        409:
+          description: Conflict - email exists!
+          schema:
+              $ref: '#/definitions/Conflict'
   /user/login:
     post:
       summary: Login de usuario.
       description: Permite a un usuario loguearse a la aplicación con su usuario y email.
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: login
+          description: The user to create.
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+              
       responses:
         200:
-          description: OK
+          description: Login Succesful
+          schema:
+            $ref: '#/definitions/Response'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Not_found'
+          
   /products:
     get:
       summary: Devuelve la lista de productos.
-      description: Devuelve la lista completa de productos de la base de datos.
+      description: Un usuario puede consultar la lista completa de productos de la base de datos.
       responses:
         200:
           description: OK
+          schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: 'Handling GET requests to /products'
+                response:
+                  items:
+                    $ref: '#/definitions/Product'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Not_found'
     post:
       summary: Agrega un producto a la lista.
-      description: Agrega un producto a la base de datos de la aplicación.
+      description: Un usuario con role de Administrador podrá agregar un producto a la base de datos de la aplicación.
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: new product
+          description: The user to create.
+          schema:
+            type: object
+            required:
+              - product_name
+              - list_price
+            properties:
+              product_name:
+                type: string
+                example: Hamburguesa Doble
+              list_price:
+                type: integer
+                example: '560.00'
       responses:
-        200:
-          description: OK
+        201:
+          description: Item creado
+          schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: 'Handling POST requests to /products - Product created'
+                response:
+                  items:
+                    $ref: '#/definitions/Newproduct'
+                    
+                        
+          
   /products/:productId:
     get:
       summary: Devuelve un producto por id.
       description: Devuelve un producto de la lista por su id "productId".
       responses:
         200:
-          description: OK
-    patch:
+          description: Product by ID
+          schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: 'Your product by ID 1'
+                product:
+                  items:
+                    $ref: '#/definitions/Product'
+        404:
+          description: Not Found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 'Product by ID ${:productId} Not found'
+    put:
       summary: Actualiza un producto por id.
-      description: Actualiza un producto de la lista por su id "productId"
+      description: Un usuario con role de Administrador puede actualizar un producto de la lista por su id "productId"
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: edit product
+          description: The user to create.
+          schema:
+            type: object
+            required:
+              - product_name
+              - list_price
+            properties:
+              product_name:
+                type: string
+                example: Hamburguesa Simple
+              list_price:
+                type: integer
+                example: '360.00'
       responses:
         200:
           description: OK
+          schema:
+            $ref: '#/definitions/OK'
+        404:
+          description: Not Found - Product ID not found
+          schema:
+            $ref: '#/definitions/Not_found'
     delete:
       summary: Elimina un producto de la lista.
-      description: Elimina un producto de la lista por id "productId"
+      description: Elimina un producto de la lista por id "productId" role de administrador.
       responses:
         200:
-          description: OK
+          description: Product deleted
+          schema:
+            $ref: '#/definitions/OK'
+        404:
+          description: Not Found - Product ID not found
+          schema:
+            $ref: '#/definitions/Not_found'
   /orders:
     get:
-      summary: Devuelve la lista de productos.
-      description: Devuelve la lista completa de productos de la base de datos.
+      summary: Devuelve la lista de pedidos.
+      description: 'Devuelve la lista completa de pedidos de la base de datos, role de administrador. "status": 1. Nuevo ; 2. Confirmado ; 3. Preparando ; 4. Enviando ; 5. Cancelado ; 6. Entregado. "payment" : 1. Cash ; 2. Card. '
       responses:
         200:
           description: OK
+          schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: 'Handling GET requests to /orders fetched'
+                responseOrders:
+                  items:
+                    type: object
+                    properties:
+                      order_id:
+                        type: string
+                        example: '1'
+                      user_id:
+                        type: string
+                        example: '2'
+                      status:
+                        type: integer
+                        example: '1'
+                      total_price:
+                        type: integer
+                        example: '1500.00'
+                      payment:
+                        type: integer
+                        example: '1'
+                      order_date:
+                        type: string
+                        example: '2020-12-13T16:01:12.000Z'
+                productsbyOrderId:
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: '1'
+                      order_id:
+                        type: string
+                        example: '1'
+                      product_id:
+                        type: string
+                        example: '2'
+                      quantity:
+                        type: integer
+                        example: '4'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Not_found'
     post:
-      summary: Agrega un producto a la lista.
-      description: Agrega un producto a la base de datos de la aplicación.
+      summary: Agrega un pedido a la lista.
+      description: Agrega un pedido a la base de datos de la aplicación.
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: new order
+          description: The new order to create.
+          schema:
+            type: object
+            required:
+              - user_id
+              - payment
+              - neworder
+            properties:
+              user_id:
+                type: string
+                example: '2'
+              payment:
+                type: integer
+                example: '1'
+              neworder:
+                items:
+                  type: object
+                  properties:
+                    product_id:
+                      type: string
+                      example: '2'
+                    quantity:
+                      type: integer
+                      example: '4'
       responses:
         200:
           description: OK
+          schema:
+            type: object
+            required:
+              - user_id
+              - payment
+              - neworder
+            properties:
+              message:
+                type: string
+                example: 'Order was created'
+              response:
+                type: object
+                properties:
+                  order_id:
+                    type: string
+                    example: '12'
+                  user_id:
+                    type: string
+                    example: '2'
+                  status:
+                    type: integer
+                    example: '1'
+                  total_price:
+                    type: integer
+                    example: '1425.00'
+                  payment:
+                    type: integer
+                    example: '1'
+                  order_date:
+                        type: string
+                        example: '2020-12-13T16:01:12.000Z'
+        404:
+          description: Not Found - Empty Order List
+          schema:
+            $ref: '#/definitions/Not_found'
+  
   /orders/:orderId:
-    get:
-      summary: Devuelve un pedido por id.
-      description: Devuelve un pedido de la lista por su id "orderId".
-      responses:
-        200:
-          description: OK
-    patch:
+    put:
       summary: Actualiza un pedido por id.
-      description: Actualiza un pedido de la lista por su id "orderId"
+      description: Actualiza el "status" de un pedido por su id "orderId", role de administrador.
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: edit status order
+          description: edit order by ID.
+          schema:
+            type: object
+            required:
+              - status
+            properties:
+              status:
+                type: string
+                example: 6
       responses:
         200:
           description: OK
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              orderId:
+                type: string
+        404:
+          description: Not Found - Product ID not found
+          schema:
+            $ref: '#/definitions/Not_found'
     delete:
       summary: Elimina un order de la lista.
-      description: Elimina un order de la lista por id "orderId"
+      description: Elimina un order de la lista por id "orderId", role de administrador.
       responses:
         200:
-          description: OK
+          description: Order deleted
+          schema:
+            $ref: '#/definitions/OK'
+        404:
+          description: Not Found - Order ID not found
+          schema:
+            $ref: '#/definitions/Not_found'
+definitions:
+  Response:
+    type: object
+    properties:
+      message:
+        type: string
+        example: 'Login Succesful'
+      token:
+        type: string
+        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
+  Userdata:
+    type: object
+    properties:
+      id:
+        type: string
+        example: '1'
+      username:
+        type: string
+        example: 'User2020'
+      fullname:
+        type: string
+        example: 'Antonio de los Rios'
+      email:
+        type: string
+        example: 'antoniodelosrios22@gmail.com'
+      phone:
+        type: string
+        example: '1123456897'
+      address:
+        type: string
+        example: 'St. Roma 1345, Fotr'
+      role:
+        type: integer
+        example: '1'
+  Newuser:
+    required:
+      - username
+      - fullname
+      - email
+      - phone
+      - address
+      - password
+    type: object
+    properties:
+      username:
+        type: string
+        example: 'User2020'
+      fullname:
+        type: string
+        example: 'Antonio de los Rios'
+      email:
+        type: string
+        example: 'antoniodelosrios22@gmail.com'
+      phone:
+        type: string
+        example: '1123456897'
+      address:
+        type: string
+        example: 'St. Roma 1345, Fotr'
+      password:
+        type: string
+        example: 'Hola1234'
+  Not_found:
+    type: object
+    properties:
+      message:
+        type: string
+        format: uuid
+        example: 'Not Found'
+  Conflict:
+    type: object
+    properties:
+      message:
+        type: string
+        format: uuid
+        example: 'Conflict'
+  OK:
+    type: object
+    properties:
+      message:
+        type: string
+        format: uuid
+        example: 'OK'
+  Product:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: '1'
+      product_name:
+        type: string
+        format: uuid
+        example: 'Pizza Pepperoni'
+      list_price:
+        type: integer
+        format: uuid
+        example: '425.00'
+  Newproduct:
+    type: object
+    properties:
+      product_name:
+        type: string
+        example: Hamburguesa Doble
+      list_price:
+        type: integer
+        example: '560.00'
+    
+    
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /Adelosrios/Test_Api/1.0.0

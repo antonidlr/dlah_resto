@@ -22,8 +22,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 dotenv.config();
 
-console.log(process.env.SECRET_MESSAGE);
-
 // Routes which should handle requests
 app.use('/user', userRoutes.router);
 app.use('/products', productRoutes);
